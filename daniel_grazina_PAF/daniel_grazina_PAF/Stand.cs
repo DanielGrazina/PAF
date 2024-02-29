@@ -560,6 +560,7 @@ namespace daniel_grazina_PAF
 				tcStand.TabPages.Remove(tpGestaoUtilizador);
 				btnGravarVendedor.Enabled = false;
 				btnAtualizarVendedor.Enabled = false;
+				btnCarregarImgVendedor.Enabled = false;
 			}
 
 			//Chamar funções para guardar os automoveis na class Automovel e mostrar os automoveis
@@ -839,7 +840,7 @@ namespace daniel_grazina_PAF
 
 			//Atualizar class
 			GuardarClass("tbl_automovel");
-			MessageBox.Show("Imformações atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageBox.Show("Informações atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
 		//Atualizar vendedor ou utilizador
