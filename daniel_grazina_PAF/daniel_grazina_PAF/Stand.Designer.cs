@@ -1361,7 +1361,7 @@
 			this.btnConsultarUtilizador.TabIndex = 92;
 			this.btnConsultarUtilizador.Text = "Consultar Dados";
 			this.btnConsultarUtilizador.UseVisualStyleBackColor = true;
-			this.btnConsultarUtilizador.Click += new System.EventHandler(this.btnConsultaUtilizador_Click);
+			this.btnConsultarUtilizador.Click += new System.EventHandler(this.BtnConsultaUtilizador_Click);
 			// 
 			// btnAtualizarUtilizador
 			// 

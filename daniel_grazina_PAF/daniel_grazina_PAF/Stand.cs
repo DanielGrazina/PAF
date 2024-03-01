@@ -228,6 +228,30 @@ namespace daniel_grazina_PAF
 			btnAtualizarPA.Enabled = truefalse;
 		}
 
+		//Função para verificação de existencia de id
+		private bool VerificarId(String nomeTabela, int
+			id)
+		{
+			con.Open();
+			cmd = new MySqlCommand
+			{
+				Connection = con,
+				CommandText = "Select * from " + nomeTabela + " where auto_id = @id"
+			};
+			cmd.Parameters.AddWithValue("@id", id);
+			dr = cmd.ExecuteReader();
+			if (dr.Read())
+			{
+				con.Close();
+				return true;
+			}
+			else
+			{
+                con.Close();
+                return false;
+            }
+		}
+
 		/*
 		#########################
 		#                       #
@@ -565,10 +589,10 @@ namespace daniel_grazina_PAF
 
 			//Chamar funções para guardar os automoveis na class Automovel e mostrar os automoveis
 			GuardarClass("tbl_automovel");
-			ShowAuto(auto[indexAuto]);
+			if (indexAuto != 0) ShowAuto(auto[indexAuto]);
 
-			//Mudar label user para nome do utilizador e label nivel para o nivel do utilizador
-			lblUser.Text = UserNome_gl;
+            //Mudar label user para nome do utilizador e label nivel para o nivel do utilizador
+            lblUser.Text = UserNome_gl;
 			lblNivel.Text = UserNivel_gl;
 		}
 
@@ -586,24 +610,24 @@ namespace daniel_grazina_PAF
 			{
 				case "tpParqueAuto":
 					GuardarClass("tbl_automovel");
-					ShowAuto(auto[indexAuto]);
-					break;
+                    if (indexAuto != 0) ShowAuto(auto[indexAuto]);
+                    break;
 				case "tpVendedores":
 					GuardarClass("tbl_vendedor");
-					ShowVendedor(vendedor[indexVendedor]);
+                    if (indexVendedor != 0) ShowVendedor(vendedor[indexVendedor]);
 					break;
 				case "tpClientes":
 					GuardarClass("tbl_cliente");
-					ShowCliente(cliente[indexCliente]);
+					if (indexCliente != 0) ShowCliente(cliente[indexCliente]);
 					break;
 				case "tpVendas":
 					EnviarDadosComboBox();
 					GuardarClass("tbl_vendas");
-					ShowVendas(vendas[indexVendas]);
+					if(indexVendas != 0) ShowVendas(vendas[indexVendas]);
 					break;
 				case "tpGestaoUtilizador":
 					GuardarClass("tbl_utilizadores");
-					ShowUtilizador(utilizador[indexUtilizadores]);
+					if(indexUtilizadores != 0) ShowUtilizador(utilizador[indexUtilizadores]);
 					break;
 			}
 		}
@@ -816,31 +840,36 @@ namespace daniel_grazina_PAF
 		//Atualizar automovel
 		private void BtnAtualizarAuto_Click(object sender, EventArgs e)
 		{
-			con.Open();
-			cmd = new MySqlCommand { Connection = con };
+			if (txtIDPA.Text != "" && VerificarId("tbl_automovel", Convert.ToInt32(txtIDPA.Text)))
+			{
+				con.Open();
+				cmd = new MySqlCommand { Connection = con };
 
-			Image imagem = pbAutoImagemPA.Image;
-			MemoryStream ms = new MemoryStream();
-			imagem.Save(ms, imagem.RawFormat);
-			byte[] bytes = ms.ToArray();
+				Image imagem = pbAutoImagemPA.Image;
+				MemoryStream ms = new MemoryStream();
+				imagem.Save(ms, imagem.RawFormat);
+				byte[] bytes = ms.ToArray();
 
-			cmd.CommandText = "UPDATE tbl_automovel SET auto_marca=@Marca, auto_modelo=@Modelo, auto_cilindrada=@Cilindrada, auto_potencia=@Potencia, auto_combustivel=@Combustivel, auto_preco=@Preco, auto_imagem=@Imagem WHERE auto_id=@ID";
+				cmd.CommandText = "UPDATE tbl_automovel SET auto_marca=@Marca, auto_modelo=@Modelo, auto_cilindrada=@Cilindrada, auto_potencia=@Potencia, auto_combustivel=@Combustivel, auto_preco=@Preco, auto_imagem=@Imagem WHERE auto_id=@ID";
 
-			cmd.Parameters.AddWithValue("@Marca", txtMarcaPA.Text);
-			cmd.Parameters.AddWithValue("@Modelo", txtModeloPA.Text);
-			cmd.Parameters.AddWithValue("@Cilindrada", Convert.ToInt32(txtCilindradaPA.Text));
-			cmd.Parameters.AddWithValue("@Potencia", Convert.ToInt32(txtPotenciaPA.Text));
-			cmd.Parameters.AddWithValue("@Combustivel", cbCombustivelPA.Text);
-			cmd.Parameters.AddWithValue("@Preco", Convert.ToInt32(txtPrecoPA.Text));
-			cmd.Parameters.AddWithValue("@Imagem", bytes);
-			cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(txtIDPA.Text));
+				cmd.Parameters.AddWithValue("@Marca", txtMarcaPA.Text);
+				cmd.Parameters.AddWithValue("@Modelo", txtModeloPA.Text);
+				cmd.Parameters.AddWithValue("@Cilindrada", Convert.ToInt32(txtCilindradaPA.Text));
+				cmd.Parameters.AddWithValue("@Potencia", Convert.ToInt32(txtPotenciaPA.Text));
+				cmd.Parameters.AddWithValue("@Combustivel", cbCombustivelPA.Text);
+				cmd.Parameters.AddWithValue("@Preco", Convert.ToInt32(txtPrecoPA.Text));
+				cmd.Parameters.AddWithValue("@Imagem", bytes);
+				cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(txtIDPA.Text));
 
-			cmd.ExecuteNonQuery();
-			con.Close();
+				cmd.ExecuteNonQuery();
+				con.Close();
 
-			//Atualizar class
-			GuardarClass("tbl_automovel");
-			MessageBox.Show("Informações atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				//Atualizar class
+				GuardarClass("tbl_automovel");
+				MessageBox.Show("Informações atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else
+				MessageBox.Show("Erro!\nId não encontrado!!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		//Atualizar vendedor ou utilizador
@@ -853,40 +882,50 @@ namespace daniel_grazina_PAF
 			switch (clickedButton.Name)
 			{
 				case "btnAtualizarVendedor":
-					Image imagem = pbVendedorImagem.Image;
-					MemoryStream ms = new MemoryStream();
-					imagem.Save(ms, imagem.RawFormat);
-					byte[] bytes = ms.ToArray();
+					if (txtIDPA.Text != "" && VerificarId("tbl_vendedor", Convert.ToInt32(txtIdVendedor.Text)))
+					{
+						Image imagem = pbVendedorImagem.Image;
+						MemoryStream ms = new MemoryStream();
+						imagem.Save(ms, imagem.RawFormat);
+						byte[] bytes = ms.ToArray();
 
-					cmd.CommandText = "UPDATE tbl_vendedor SET vendedor_nome=@Nome, vendedor_email=@Email, vendedor_tlm=@Telemovel, vendedor_imagem=@Imagem WHERE vendedor_id=@ID";
+						cmd.CommandText = "UPDATE tbl_vendedor SET vendedor_nome=@Nome, vendedor_email=@Email, vendedor_tlm=@Telemovel, vendedor_imagem=@Imagem WHERE vendedor_id=@ID";
 
-					cmd.Parameters.AddWithValue("@Nome", txtNomeVendedor.Text);
-					cmd.Parameters.AddWithValue("@Email", txtEmailVendedor.Text);
-					cmd.Parameters.AddWithValue("@Telemovel", Convert.ToInt32(txtTlmVendedor.Text));
-					cmd.Parameters.AddWithValue("@Imagem", bytes);
-					cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(txtIdVendedor.Text));
+						cmd.Parameters.AddWithValue("@Nome", txtNomeVendedor.Text);
+						cmd.Parameters.AddWithValue("@Email", txtEmailVendedor.Text);
+						cmd.Parameters.AddWithValue("@Telemovel", Convert.ToInt32(txtTlmVendedor.Text));
+						cmd.Parameters.AddWithValue("@Imagem", bytes);
+						cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(txtIdVendedor.Text));
 
-					cmd.ExecuteNonQuery();
-					con.Close();
-					//Atualizar class
-					GuardarClass("tbl_vendedor");
-					MessageBox.Show("Informações do vendedor atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-					break;
+						cmd.ExecuteNonQuery();
+						con.Close();
+						//Atualizar class
+						GuardarClass("tbl_vendedor");
+						MessageBox.Show("Informações do vendedor atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					}
+					else
+                        MessageBox.Show("Erro!\nId não encontrado!!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
 
 				case "btnAtualizarCliente":
-					cmd.CommandText = "UPDATE tbl_cliente SET cliente_nome=@Nome, cliente_email=@Email, cliente_tlm=@Telemovel WHERE vendedor_id=@ID";
+                    if (txtIDPA.Text != "" && VerificarId("tbl_cliente", Convert.ToInt32(txtIdCliente.Text)))
+                    {
+						cmd.CommandText = "UPDATE tbl_cliente SET cliente_nome=@Nome, cliente_email=@Email, cliente_tlm=@Telemovel WHERE vendedor_id=@ID";
 
-					cmd.Parameters.AddWithValue("@Nome", txtNomeCliente.Text);
-					cmd.Parameters.AddWithValue("@Email", txtEmailCliente.Text);
-					cmd.Parameters.AddWithValue("@Telemovel", Convert.ToInt32(txtTlmCliente.Text));
-					cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(txtIdCliente.Text));
+						cmd.Parameters.AddWithValue("@Nome", txtNomeCliente.Text);
+						cmd.Parameters.AddWithValue("@Email", txtEmailCliente.Text);
+						cmd.Parameters.AddWithValue("@Telemovel", Convert.ToInt32(txtTlmCliente.Text));
+						cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(txtIdCliente.Text));
 
-					cmd.ExecuteNonQuery();
-					con.Close();
-					//Atualizar class
-					GuardarClass("tbl_cliente");
-					MessageBox.Show("Informações do cliente atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-					break;
+						cmd.ExecuteNonQuery();
+						con.Close();
+						//Atualizar class
+						GuardarClass("tbl_cliente");
+						MessageBox.Show("Informações do cliente atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                        MessageBox.Show("Erro!\nId não encontrado!!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
 			}
 
 		}
@@ -894,70 +933,78 @@ namespace daniel_grazina_PAF
 		//Atualizar venda
 		private void BtnAtualizarVendas_Click(object sender, EventArgs e)
 		{
-			con.Open();
-			cmd = new MySqlCommand { Connection = con };
+            if (txtIDPA.Text != "" && VerificarId("tbl_vendas", Convert.ToInt32(txtIdVendas.Text)))
+            {
+				con.Open();
+				cmd = new MySqlCommand { Connection = con };
 
-			//Caso o modelo seja atualizado (por engano de seleção), tornar modelo antigo disponivel para venda
-			int modeloAnterior = 0;
-			cmd.CommandText = "SELECT venda_modelo FROM tbl_vendas WHERE venda_id = @ID";
-			cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(txtIdVendas.Text));
-			var result = cmd.ExecuteScalar();
-			if (result != null)
-			{
-				modeloAnterior = Convert.ToInt32(result);
-			}
-			if (modeloAnterior != 0)
-			{
-				cmd.CommandText = "UPDATE tbl_automovel SET auto_vendido = 0 WHERE auto_id = @ModeloAnterior";
-				cmd.Parameters.Clear();
-				cmd.Parameters.AddWithValue("@ModeloAnterior", modeloAnterior);
+				//Caso o modelo seja atualizado (por engano de seleção), tornar modelo antigo disponivel para venda
+				int modeloAnterior = 0;
+				cmd.CommandText = "SELECT venda_modelo FROM tbl_vendas WHERE venda_id = @ID";
+				cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(txtIdVendas.Text));
+				var result = cmd.ExecuteScalar();
+				if (result != null)
+				{
+					modeloAnterior = Convert.ToInt32(result);
+				}
+				if (modeloAnterior != 0)
+				{
+					cmd.CommandText = "UPDATE tbl_automovel SET auto_vendido = 0 WHERE auto_id = @ModeloAnterior";
+					cmd.Parameters.Clear();
+					cmd.Parameters.AddWithValue("@ModeloAnterior", modeloAnterior);
+					cmd.ExecuteNonQuery();
+				}
+
+				cmd.CommandText = "UPDATE tbl_vendas SET venda_modelo=@Modelo, venda_cliente=@Cliente, venda_vendedor=@Vendedor, venda_preco=@Preco, venda_data=@Data WHERE venda_id=@ID";
+				cmd.Parameters.AddWithValue("@Modelo", Convert.ToInt32(cbModeloVendas.SelectedValue));
+				cmd.Parameters.AddWithValue("@Cliente", Convert.ToInt32(cbClienteVendas.SelectedValue));
+				cmd.Parameters.AddWithValue("@Vendedor", Convert.ToInt32(cbVendedorVendas.SelectedValue));
+				cmd.Parameters.AddWithValue("@Preco", Convert.ToInt32(txtPrecoVendas.Text));
+				cmd.Parameters.AddWithValue("@Data", dtpDataVendas.Text);
+				cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(txtIdVendas.Text));
 				cmd.ExecuteNonQuery();
-			}
 
+				//Tornar novo modelo como vendido
+				cmd.CommandText = "UPDATE tbl_automovel SET auto_vendido = 1 WHERE auto_id = @Modelo";
+				cmd.Parameters.Clear();
+				cmd.Parameters.AddWithValue("@Modelo", Convert.ToInt32(cbModeloVendas.SelectedValue));
+				cmd.ExecuteNonQuery();
 
-			cmd.CommandText = "UPDATE tbl_vendas SET venda_modelo=@Modelo, venda_cliente=@Cliente, venda_vendedor=@Vendedor, venda_preco=@Preco, venda_data=@Data WHERE venda_id=@ID";
-
-			cmd.Parameters.AddWithValue("@Modelo", Convert.ToInt32(cbModeloVendas.SelectedValue));
-			cmd.Parameters.AddWithValue("@Cliente", Convert.ToInt32(cbClienteVendas.SelectedValue));
-			cmd.Parameters.AddWithValue("@Vendedor", Convert.ToInt32(cbVendedorVendas.SelectedValue));
-			cmd.Parameters.AddWithValue("@Preco", Convert.ToInt32(txtPrecoVendas.Text));
-			cmd.Parameters.AddWithValue("@Data", dtpDataVendas.Text);
-			cmd.Parameters.AddWithValue("@ID", Convert.ToInt32(txtIdVendas.Text));
-			cmd.ExecuteNonQuery();
-
-			//Tornar novo modelo como vendido
-			cmd.CommandText = "UPDATE tbl_automovel SET auto_vendido = 1 WHERE auto_id = @Modelo";
-			cmd.Parameters.Clear();
-			cmd.Parameters.AddWithValue("@Modelo", Convert.ToInt32(cbModeloVendas.SelectedValue));
-			cmd.ExecuteNonQuery();
-
-			con.Close();
-			//Atualizar class
-			GuardarClass("tbl_vendas");
-			ShowVendas(vendas[indexVendas]);
-			MessageBox.Show("Informações atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-		}
+				con.Close();
+				//Atualizar class
+				GuardarClass("tbl_vendas");
+				ShowVendas(vendas[indexVendas]);
+				MessageBox.Show("Informações atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+                MessageBox.Show("Erro!\nId não encontrado!!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
 
 		//Atualizar Utilizador
 		private void btnAtualizarUtilizador_Click(object sender, EventArgs e)
 		{
-			con.Open();
-			cmd = new MySqlCommand
-			{
-				Connection = con,
-				CommandText = "UPDATE tbl_utilizadores SET lg_nome = @nome, lg_password = @pass, lg_nivel = @nivel where lg_id = @id"
-			};
-			cmd.Parameters.AddWithValue("@nome", txtNomeGestao.Text);
-			cmd.Parameters.AddWithValue("@pass", txtPasswordGestao.Text);
-			cmd.Parameters.AddWithValue("@nivel", cbNivelGestao.SelectedItem);
-			cmd.Parameters.AddWithValue("@id", txtIdGestao.Text);
-			cmd.ExecuteNonQuery();
-			con.Close();
-			GuardarClass("tbl_utilizadores");
-			//Atualizar class
-			ShowUtilizador(utilizador[indexUtilizadores]);
-			MessageBox.Show("Informações atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-		}
+            if (txtIDPA.Text != "" && VerificarId("tbl_utilizadores", Convert.ToInt32(txtIdGestao.Text)))
+            {
+                con.Open();
+				cmd = new MySqlCommand
+				{
+					Connection = con,
+					CommandText = "UPDATE tbl_utilizadores SET lg_nome = @nome, lg_password = @pass, lg_nivel = @nivel where lg_id = @id"
+				};
+				cmd.Parameters.AddWithValue("@nome", txtNomeGestao.Text);
+				cmd.Parameters.AddWithValue("@pass", txtPasswordGestao.Text);
+				cmd.Parameters.AddWithValue("@nivel", cbNivelGestao.SelectedItem);
+				cmd.Parameters.AddWithValue("@id", txtIdGestao.Text);
+				cmd.ExecuteNonQuery();
+				con.Close();
+				GuardarClass("tbl_utilizadores");
+				//Atualizar class
+				ShowUtilizador(utilizador[indexUtilizadores]);
+				MessageBox.Show("Informações atualizadas!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+                MessageBox.Show("Erro!\nId não encontrado!!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
 
 		/*
 		#####################
@@ -970,37 +1017,62 @@ namespace daniel_grazina_PAF
 		//Consulta automovel
 		private void BtnConsultarAuto_Click(object sender, EventArgs e)
 		{
-			int autoIdConsultado = Convert.ToInt32(txtIDPA.Text);
-			Consultar(new Automovel(), autoIdConsultado, "Automóvel com o ID especificado não encontrado!");
-		}
+			if (txtIDPA.Text != "")
+			{
+				int autoIdConsultado = Convert.ToInt32(txtIDPA.Text);
+                Consultar(new Automovel(), autoIdConsultado, "Automóvel com o ID especificado não encontrado!");
+            }
+			else
+                Consultar(new Automovel(), 0, "Automóvel com o ID especificado não encontrado!");
+        }
 
 		//Consulta vendedor
 		private void BtnConsultarVendedor_Click(object sender, EventArgs e)
 		{
-			int vendedorIdConsultado = Convert.ToInt32(txtIdVendedor.Text);
-			Consultar(new Vendedor(), vendedorIdConsultado, "Vendedor com o ID especificado não encontrado!");
-		}
+            if (txtIDPA.Text != "")
+            {
+                int vendedorIdConsultado = Convert.ToInt32(txtIdVendedor.Text);
+				Consultar(new Vendedor(), vendedorIdConsultado, "Vendedor com o ID especificado não encontrado!");
+            }
+            else
+                Consultar(new Automovel(), 0, "Automóvel com o ID especificado não encontrado!");
+        }
 
 		//Consulta cliente
 		private void BtnConsultarCliente_Click(object sender, EventArgs e)
 		{
-			int clienteIdConsultado = Convert.ToInt32(txtIdCliente.Text);
-			Consultar(new Cliente(), clienteIdConsultado, "Cliente com o ID especificado não encontrado !");
-		}
+            if (txtIDPA.Text != "")
+            {
+                int clienteIdConsultado = Convert.ToInt32(txtIdCliente.Text);
+				Consultar(new Cliente(), clienteIdConsultado, "Cliente com o ID especificado não encontrado !");
+            }
+            else
+                Consultar(new Automovel(), 0, "Automóvel com o ID especificado não encontrado!");
+        }
 
 		//Consulta venda
 		private void BtnConsultarVendas_Click(object sender, EventArgs e)
 		{
-			int vendaIdConsultado = Convert.ToInt32(txtIdVendas.Text);
-			Consultar(new Vendas(), vendaIdConsultado, "Venda com o ID especificado não encontrada !");
-		}
+            if (txtIDPA.Text != "")
+            {
+                int vendaIdConsultado = Convert.ToInt32(txtIdVendas.Text);
+				Consultar(new Vendas(), vendaIdConsultado, "Venda com o ID especificado não encontrada !");
+            }
+            else
+                Consultar(new Automovel(), 0, "Automóvel com o ID especificado não encontrado!");
+        }
 
 		//Consulta utilizador
-		private void btnConsultaUtilizador_Click(object sender, EventArgs e)
+		private void BtnConsultaUtilizador_Click(object sender, EventArgs e)
 		{
-			int utilizadorIdConsultado = Convert.ToInt32(txtIdGestao.Text);
-			Consultar(new Utilizador(), utilizadorIdConsultado, "Utilizador com o ID especificado não encontrada !");
-		}
+            if (txtIDPA.Text != "")
+            {
+                int utilizadorIdConsultado = Convert.ToInt32(txtIdGestao.Text);
+				Consultar(new Utilizador(), utilizadorIdConsultado, "Utilizador com o ID especificado não encontrada !");
+            }
+            else
+                Consultar(new Automovel(), 0, "Automóvel com o ID especificado não encontrado!");
+        }
 
 		/*
 		##################################
