@@ -114,6 +114,11 @@
 			this.label35 = new System.Windows.Forms.Label();
 			this.label36 = new System.Windows.Forms.Label();
 			this.tpGestaoUtilizador = new System.Windows.Forms.TabPage();
+			this.btnProximoUtilizador = new System.Windows.Forms.Button();
+			this.btnAnteriorUtilizador = new System.Windows.Forms.Button();
+			this.btnConsultarUtilizador = new System.Windows.Forms.Button();
+			this.btnAtualizarUtilizador = new System.Windows.Forms.Button();
+			this.btnGravarUtilizador = new System.Windows.Forms.Button();
 			this.label27 = new System.Windows.Forms.Label();
 			this.label20 = new System.Windows.Forms.Label();
 			this.dgvListagemUtilizadorGestao = new System.Windows.Forms.DataGridView();
@@ -132,11 +137,6 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.btnSair = new System.Windows.Forms.Button();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-			this.btnProximoUtilizador = new System.Windows.Forms.Button();
-			this.btnAnteriorUtilizador = new System.Windows.Forms.Button();
-			this.btnConsultarUtilizador = new System.Windows.Forms.Button();
-			this.btnAtualizarUtilizador = new System.Windows.Forms.Button();
-			this.btnGravarUtilizador = new System.Windows.Forms.Button();
 			this.tcStand.SuspendLayout();
 			this.tpParqueAuto.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbAutoImagemPA)).BeginInit();
@@ -228,7 +228,7 @@
 			this.tpParqueAuto.Padding = new System.Windows.Forms.Padding(3);
 			this.tpParqueAuto.Size = new System.Drawing.Size(702, 343);
 			this.tpParqueAuto.TabIndex = 1;
-			this.tpParqueAuto.Text = "Parque Automovel";
+			this.tpParqueAuto.Text = "Parque Automóvel";
 			this.tpParqueAuto.UseVisualStyleBackColor = true;
 			// 
 			// lblVendidoPA
@@ -240,7 +240,7 @@
 			this.lblVendidoPA.Name = "lblVendidoPA";
 			this.lblVendidoPA.Size = new System.Drawing.Size(174, 23);
 			this.lblVendidoPA.TabIndex = 51;
-			this.lblVendidoPA.Text = "Automovel Vendido!!!";
+			this.lblVendidoPA.Text = "Automóvel Vendido!!!";
 			this.lblVendidoPA.Visible = false;
 			// 
 			// cbCombustivelPA
@@ -1115,9 +1115,9 @@
 			this.label36.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label36.Location = new System.Drawing.Point(15, 18);
 			this.label36.Name = "label36";
-			this.label36.Size = new System.Drawing.Size(131, 25);
+			this.label36.Size = new System.Drawing.Size(75, 25);
 			this.label36.TabIndex = 52;
-			this.label36.Text = "Ficha Técnica";
+			this.label36.Text = "Vendas";
 			// 
 			// tpGestaoUtilizador
 			// 
@@ -1146,6 +1146,66 @@
 			this.tpGestaoUtilizador.TabIndex = 4;
 			this.tpGestaoUtilizador.Text = "Gestão Utilizadores";
 			this.tpGestaoUtilizador.UseVisualStyleBackColor = true;
+			// 
+			// btnProximoUtilizador
+			// 
+			this.btnProximoUtilizador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnProximoUtilizador.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnProximoUtilizador.Location = new System.Drawing.Point(164, 211);
+			this.btnProximoUtilizador.Name = "btnProximoUtilizador";
+			this.btnProximoUtilizador.Size = new System.Drawing.Size(48, 26);
+			this.btnProximoUtilizador.TabIndex = 94;
+			this.btnProximoUtilizador.Text = ">";
+			this.btnProximoUtilizador.UseVisualStyleBackColor = true;
+			this.btnProximoUtilizador.Click += new System.EventHandler(this.BtnProximo_Click);
+			// 
+			// btnAnteriorUtilizador
+			// 
+			this.btnAnteriorUtilizador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnAnteriorUtilizador.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnAnteriorUtilizador.Location = new System.Drawing.Point(110, 211);
+			this.btnAnteriorUtilizador.Name = "btnAnteriorUtilizador";
+			this.btnAnteriorUtilizador.Size = new System.Drawing.Size(48, 26);
+			this.btnAnteriorUtilizador.TabIndex = 93;
+			this.btnAnteriorUtilizador.Text = "<";
+			this.btnAnteriorUtilizador.UseVisualStyleBackColor = true;
+			this.btnAnteriorUtilizador.Click += new System.EventHandler(this.BtnAnterior_Click);
+			// 
+			// btnConsultarUtilizador
+			// 
+			this.btnConsultarUtilizador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnConsultarUtilizador.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnConsultarUtilizador.Location = new System.Drawing.Point(271, 302);
+			this.btnConsultarUtilizador.Name = "btnConsultarUtilizador";
+			this.btnConsultarUtilizador.Size = new System.Drawing.Size(124, 26);
+			this.btnConsultarUtilizador.TabIndex = 92;
+			this.btnConsultarUtilizador.Text = "Consultar Dados";
+			this.btnConsultarUtilizador.UseVisualStyleBackColor = true;
+			this.btnConsultarUtilizador.Click += new System.EventHandler(this.BtnConsultaUtilizador_Click);
+			// 
+			// btnAtualizarUtilizador
+			// 
+			this.btnAtualizarUtilizador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnAtualizarUtilizador.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnAtualizarUtilizador.Location = new System.Drawing.Point(141, 302);
+			this.btnAtualizarUtilizador.Name = "btnAtualizarUtilizador";
+			this.btnAtualizarUtilizador.Size = new System.Drawing.Size(124, 26);
+			this.btnAtualizarUtilizador.TabIndex = 91;
+			this.btnAtualizarUtilizador.Text = "Atualizar Dados";
+			this.btnAtualizarUtilizador.UseVisualStyleBackColor = true;
+			this.btnAtualizarUtilizador.Click += new System.EventHandler(this.btnAtualizarUtilizador_Click);
+			// 
+			// btnGravarUtilizador
+			// 
+			this.btnGravarUtilizador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnGravarUtilizador.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnGravarUtilizador.Location = new System.Drawing.Point(11, 302);
+			this.btnGravarUtilizador.Name = "btnGravarUtilizador";
+			this.btnGravarUtilizador.Size = new System.Drawing.Size(124, 26);
+			this.btnGravarUtilizador.TabIndex = 90;
+			this.btnGravarUtilizador.Text = "Gravar Dados";
+			this.btnGravarUtilizador.UseVisualStyleBackColor = true;
+			this.btnGravarUtilizador.Click += new System.EventHandler(this.BtnGravarUtilizador_Click);
 			// 
 			// label27
 			// 
@@ -1326,66 +1386,6 @@
 			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.pictureBox1.TabIndex = 0;
 			this.pictureBox1.TabStop = false;
-			// 
-			// btnProximoUtilizador
-			// 
-			this.btnProximoUtilizador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnProximoUtilizador.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnProximoUtilizador.Location = new System.Drawing.Point(164, 211);
-			this.btnProximoUtilizador.Name = "btnProximoUtilizador";
-			this.btnProximoUtilizador.Size = new System.Drawing.Size(48, 26);
-			this.btnProximoUtilizador.TabIndex = 94;
-			this.btnProximoUtilizador.Text = ">";
-			this.btnProximoUtilizador.UseVisualStyleBackColor = true;
-			this.btnProximoUtilizador.Click += new System.EventHandler(this.BtnProximo_Click);
-			// 
-			// btnAnteriorUtilizador
-			// 
-			this.btnAnteriorUtilizador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAnteriorUtilizador.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnAnteriorUtilizador.Location = new System.Drawing.Point(110, 211);
-			this.btnAnteriorUtilizador.Name = "btnAnteriorUtilizador";
-			this.btnAnteriorUtilizador.Size = new System.Drawing.Size(48, 26);
-			this.btnAnteriorUtilizador.TabIndex = 93;
-			this.btnAnteriorUtilizador.Text = "<";
-			this.btnAnteriorUtilizador.UseVisualStyleBackColor = true;
-			this.btnAnteriorUtilizador.Click += new System.EventHandler(this.BtnAnterior_Click);
-			// 
-			// btnConsultarUtilizador
-			// 
-			this.btnConsultarUtilizador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnConsultarUtilizador.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnConsultarUtilizador.Location = new System.Drawing.Point(271, 302);
-			this.btnConsultarUtilizador.Name = "btnConsultarUtilizador";
-			this.btnConsultarUtilizador.Size = new System.Drawing.Size(124, 26);
-			this.btnConsultarUtilizador.TabIndex = 92;
-			this.btnConsultarUtilizador.Text = "Consultar Dados";
-			this.btnConsultarUtilizador.UseVisualStyleBackColor = true;
-			this.btnConsultarUtilizador.Click += new System.EventHandler(this.BtnConsultaUtilizador_Click);
-			// 
-			// btnAtualizarUtilizador
-			// 
-			this.btnAtualizarUtilizador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnAtualizarUtilizador.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnAtualizarUtilizador.Location = new System.Drawing.Point(141, 302);
-			this.btnAtualizarUtilizador.Name = "btnAtualizarUtilizador";
-			this.btnAtualizarUtilizador.Size = new System.Drawing.Size(124, 26);
-			this.btnAtualizarUtilizador.TabIndex = 91;
-			this.btnAtualizarUtilizador.Text = "Atualizar Dados";
-			this.btnAtualizarUtilizador.UseVisualStyleBackColor = true;
-			this.btnAtualizarUtilizador.Click += new System.EventHandler(this.btnAtualizarUtilizador_Click);
-			// 
-			// btnGravarUtilizador
-			// 
-			this.btnGravarUtilizador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.btnGravarUtilizador.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnGravarUtilizador.Location = new System.Drawing.Point(11, 302);
-			this.btnGravarUtilizador.Name = "btnGravarUtilizador";
-			this.btnGravarUtilizador.Size = new System.Drawing.Size(124, 26);
-			this.btnGravarUtilizador.TabIndex = 90;
-			this.btnGravarUtilizador.Text = "Gravar Dados";
-			this.btnGravarUtilizador.UseVisualStyleBackColor = true;
-			this.btnGravarUtilizador.Click += new System.EventHandler(this.BtnGravarUtilizador_Click);
 			// 
 			// Stand
 			// 

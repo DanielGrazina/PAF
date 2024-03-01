@@ -126,6 +126,7 @@ namespace daniel_grazina_PAF
 						auto[i] = new Automovel(Convert.ToInt32(dr["auto_id"]), dr["auto_marca"].ToString(), dr["auto_modelo"].ToString(), Convert.ToInt32(dr["auto_cilindrada"]), Convert.ToInt32(dr["auto_potencia"]), dr["auto_combustivel"].ToString(), Convert.ToInt32(dr["auto_preco"]), Convert.ToBoolean(dr["auto_vendido"]), imagem);
 						i++;
 					}
+					con.Close();
 					break;
 				case "tbl_vendedor":
 					GetCount("tbl_vendedor");
@@ -138,6 +139,7 @@ namespace daniel_grazina_PAF
 						vendedor[i] = new Vendedor(Convert.ToInt32(dr["vendedor_id"]), dr["vendedor_nome"].ToString(), dr["vendedor_email"].ToString(), Convert.ToInt32(dr["vendedor_tlm"]), imagem);
 						i++;
 					}
+					con.Close();
 					break;
 				case "tbl_cliente":
 					GetCount("tbl_cliente");
@@ -148,6 +150,7 @@ namespace daniel_grazina_PAF
 						cliente[i] = new Cliente(Convert.ToInt32(dr["cliente_id"]), dr["cliente_nome"].ToString(), dr["cliente_email"].ToString(), Convert.ToInt32(dr["cliente_tlm"]));
 						i++;
 					}
+					con.Close();
 					break;
 				case "tbl_vendas":
 					GetCount("tbl_vendas");
@@ -158,6 +161,7 @@ namespace daniel_grazina_PAF
 						vendas[i] = new Vendas(Convert.ToInt32(dr["venda_id"]), Convert.ToInt32(dr["venda_modelo"]), Convert.ToInt32(dr["venda_cliente"]), Convert.ToInt32(dr["venda_vendedor"]), Convert.ToInt32(dr["venda_preco"]), dr["venda_data"].ToString());
 						i++;
 					}
+					con.Close();
 					break;
 				case "tbl_utilizadores":
 					GetCount("tbl_utilizadores");
@@ -168,9 +172,9 @@ namespace daniel_grazina_PAF
 						utilizador[i] = new Utilizador(Convert.ToInt32(dr["lg_id"]), dr["lg_nome"].ToString(), dr["lg_password"].ToString(), dr["lg_nivel"].ToString());
 						i++;
 					}
+					con.Close();
 					break;
 			}
-			con.Close();
 		}
 
 		//Função para introduzir dados nas combobox do separador vendas
@@ -229,14 +233,13 @@ namespace daniel_grazina_PAF
 		}
 
 		//Função para verificação de existencia de id
-		private bool VerificarId(String nomeTabela, int
-			id)
+		private bool VerificarId(String nomeTabela, String colunaId, int id)
 		{
 			con.Open();
 			cmd = new MySqlCommand
 			{
 				Connection = con,
-				CommandText = "Select * from " + nomeTabela + " where auto_id = @id"
+				CommandText = "Select * from " + nomeTabela + " where " + colunaId + " = @id"
 			};
 			cmd.Parameters.AddWithValue("@id", id);
 			dr = cmd.ExecuteReader();
@@ -250,6 +253,16 @@ namespace daniel_grazina_PAF
                 con.Close();
                 return false;
             }
+		}
+
+		//Função de mensagem de confirmação
+		private bool MensagemConfirmação(String mensagem)
+		{
+			DialogResult result = MessageBox.Show(mensagem, "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+			if (result == DialogResult.No)
+				return false;
+			else
+				return true;
 		}
 
 		/*
@@ -589,7 +602,7 @@ namespace daniel_grazina_PAF
 
 			//Chamar funções para guardar os automoveis na class Automovel e mostrar os automoveis
 			GuardarClass("tbl_automovel");
-			if (indexAuto != 0) ShowAuto(auto[indexAuto]);
+			if (NumAutoDB != 0) ShowAuto(auto[indexAuto]);
 
             //Mudar label user para nome do utilizador e label nivel para o nivel do utilizador
             lblUser.Text = UserNome_gl;
@@ -610,24 +623,24 @@ namespace daniel_grazina_PAF
 			{
 				case "tpParqueAuto":
 					GuardarClass("tbl_automovel");
-                    if (indexAuto != 0) ShowAuto(auto[indexAuto]);
+                    if (NumAutoDB != 0) ShowAuto(auto[indexAuto]);
                     break;
 				case "tpVendedores":
 					GuardarClass("tbl_vendedor");
-                    if (indexVendedor != 0) ShowVendedor(vendedor[indexVendedor]);
+                    if (NumVendedorDB != 0) ShowVendedor(vendedor[indexVendedor]);
 					break;
 				case "tpClientes":
 					GuardarClass("tbl_cliente");
-					if (indexCliente != 0) ShowCliente(cliente[indexCliente]);
+					if (NumClientDB != 0) ShowCliente(cliente[indexCliente]);
 					break;
 				case "tpVendas":
 					EnviarDadosComboBox();
 					GuardarClass("tbl_vendas");
-					if(indexVendas != 0) ShowVendas(vendas[indexVendas]);
+					if(NumVendasDB != 0) ShowVendas(vendas[indexVendas]);
 					break;
 				case "tpGestaoUtilizador":
 					GuardarClass("tbl_utilizadores");
-					if(indexUtilizadores != 0) ShowUtilizador(utilizador[indexUtilizadores]);
+					if(NumUtilizadoresDB != 0) ShowUtilizador(utilizador[indexUtilizadores]);
 					break;
 			}
 		}
@@ -707,6 +720,29 @@ namespace daniel_grazina_PAF
 		//Gravar novo automovel na Database
 		private void BtnGravarAuto_Click(object sender, EventArgs e)
 		{
+			bool confirmacao = MensagemConfirmação("Deseja guardar automovél?");
+			if (confirmacao == false)
+				return;
+
+			// Validar os dados
+			if (string.IsNullOrWhiteSpace(txtMarcaPA.Text) ||
+				string.IsNullOrWhiteSpace(txtModeloPA.Text) ||
+				string.IsNullOrWhiteSpace(txtCilindradaPA.Text) ||
+				string.IsNullOrWhiteSpace(txtPotenciaPA.Text) ||
+				string.IsNullOrWhiteSpace(cbCombustivelPA.Text) ||
+				string.IsNullOrWhiteSpace(txtPrecoPA.Text))
+			{
+				MessageBox.Show("Por favor, preencha todos os campos.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			if (!int.TryParse(txtCilindradaPA.Text, out _) ||
+				!int.TryParse(txtPotenciaPA.Text, out _) ||
+				!int.TryParse(txtPrecoPA.Text, out _))
+			{
+				MessageBox.Show("Por favor, insira valores numéricos válidos.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
 			con.Open();
 			cmd = new MySqlCommand { Connection = con };
 
@@ -715,14 +751,13 @@ namespace daniel_grazina_PAF
 			imagem.Save(ms, imagem.RawFormat);
 			byte[] bytes = ms.ToArray();
 
-			cmd.CommandText = "insert into tbl_automovel (auto_marca, auto_modelo, auto_cilindrada, auto_potencia, auto_combustivel, auto_preco, auto_vendido, auto_imagem) values (@marca, @modelo, @cilindrada, @potencia, @combustivel,  @preco, 0, @imagem)";
+			cmd.CommandText = "insert into tbl_automovel (auto_marca, auto_modelo, auto_cilindrada, auto_potencia, auto_combustivel, auto_preco, auto_vendido) values (@marca, @modelo, @cilindrada, @potencia, @combustivel,  @preco, 0)";
 			cmd.Parameters.AddWithValue("@marca", txtMarcaPA.Text);
 			cmd.Parameters.AddWithValue("@modelo", txtModeloPA.Text);
 			cmd.Parameters.AddWithValue("@cilindrada", Convert.ToInt32(txtCilindradaPA.Text));
 			cmd.Parameters.AddWithValue("@potencia", Convert.ToInt32(txtPotenciaPA.Text));
 			cmd.Parameters.AddWithValue("@combustivel", cbCombustivelPA.Text);
 			cmd.Parameters.AddWithValue("@preco", Convert.ToInt32(txtPrecoPA.Text));
-			cmd.Parameters.AddWithValue("@imagem", bytes);
 			cmd.ExecuteNonQuery();
 			con.Close();
 
@@ -736,6 +771,7 @@ namespace daniel_grazina_PAF
 		private void BtnGravarVendedorCliente_Click(object sender, EventArgs e)
 		{
 			Button clickedButton = sender as Button;
+			bool confirmacao;
 
 			con.Open();
 			cmd = new MySqlCommand { Connection = con };
@@ -743,16 +779,34 @@ namespace daniel_grazina_PAF
 			switch (clickedButton.Name)
 			{
 				case "btnGravarVendedor":
+					confirmacao = MensagemConfirmação("Deseja guardar vendedor?");
+					if (confirmacao == false)
+						return;
+
+					// Validar os dados
+					if (string.IsNullOrWhiteSpace(txtNomeVendedor.Text) ||
+						string.IsNullOrWhiteSpace(txtEmailVendedor.Text))
+					{
+						MessageBox.Show("Por favor, preencha todos os campos.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return;
+					}
+
+					if (!int.TryParse(txtTlmVendedor.Text, out _) ||
+						(Int32)txtTlmVendedor.Text.Length > 9)
+					{
+						MessageBox.Show("Por favor, insira um numero de tlm válido.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return;
+					}
+
 					Image imagem = pbVendedorImagem.Image;
 					MemoryStream ms = new MemoryStream();
 					imagem.Save(ms, imagem.RawFormat);
 					byte[] bytes = ms.ToArray();
 
-					cmd.CommandText = "INSERT INTO tbl_vendedor (vendedor_nome, vendedor_email, vendedor_tlm, vendedor_imagem) VALUES (@nome, @email, @tlm, @imagem)";
+					cmd.CommandText = "INSERT INTO tbl_vendedor (vendedor_nome, vendedor_email, vendedor_tlm) VALUES (@nome, @email, @tlm)";
 					cmd.Parameters.AddWithValue("@nome", txtNomeVendedor.Text);
 					cmd.Parameters.AddWithValue("@email", txtEmailVendedor.Text);
 					cmd.Parameters.AddWithValue("@tlm", Convert.ToInt32(txtTlmVendedor.Text));
-					cmd.Parameters.AddWithValue("@imagem", bytes);
 					cmd.ExecuteNonQuery();
 					con.Close();
 
@@ -763,6 +817,25 @@ namespace daniel_grazina_PAF
 					break;
 
 				case "btnGravarCliente":
+					confirmacao = MensagemConfirmação("Deseja guardar cliente?");
+					if (confirmacao == false)
+						return;
+
+					// Validar os dados
+					if (string.IsNullOrWhiteSpace(txtNomeCliente.Text) ||
+						string.IsNullOrWhiteSpace(txtEmailCliente.Text))
+					{
+						MessageBox.Show("Por favor, preencha todos os campos.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return;
+					}
+
+					if (!int.TryParse(txtTlmCliente.Text, out _) ||
+						(Int32)txtTlmCliente.Text.Length > 9)
+					{
+						MessageBox.Show("Por favor, insira um numero de tlm válido.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return;
+					}
+
 					cmd.CommandText = "INSERT INTO tbl_cliente (cliente_nome, cliente_email, cliente_tlm) VALUES (@nome, @email, @tlm)";
 					cmd.Parameters.AddWithValue("@nome", txtNomeCliente.Text);
 					cmd.Parameters.AddWithValue("@email", txtEmailCliente.Text);
@@ -776,12 +849,15 @@ namespace daniel_grazina_PAF
 					MessageBox.Show("Cliente inserido na BD!!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
 					break;
 			}
-			con.Close();
 		}
 
 		//Gravar nova venda
 		private void BtnGravarVendas_Click(object sender, EventArgs e)
 		{
+			bool confirmacao = MensagemConfirmação("Deseja guardar venda?");
+			if (confirmacao == false)
+				return;
+
 			con.Open();
 			cmd = new MySqlCommand
 			{
@@ -812,6 +888,17 @@ namespace daniel_grazina_PAF
 		//Gravar novo utilizador
 		private void BtnGravarUtilizador_Click(object sender, EventArgs e)
 		{
+			bool confirmacao = MensagemConfirmação("Deseja guardar utilizador?");
+			if (confirmacao == false)
+				return;
+
+			// Validar os dados
+			if (string.IsNullOrWhiteSpace(txtNomeGestao.Text) ||
+				string.IsNullOrWhiteSpace(txtPasswordGestao.Text))
+			{
+				MessageBox.Show("Por favor, preencha todos os campos.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
 			con.Open();
 			cmd = new MySqlCommand
 			{
@@ -840,7 +927,18 @@ namespace daniel_grazina_PAF
 		//Atualizar automovel
 		private void BtnAtualizarAuto_Click(object sender, EventArgs e)
 		{
-			if (txtIDPA.Text != "" && VerificarId("tbl_automovel", Convert.ToInt32(txtIDPA.Text)))
+			bool confirmacao = MensagemConfirmação("Deseja atualizar automovél?");
+			if (confirmacao == false)
+				return;
+
+			if (!int.TryParse(txtCilindradaPA.Text, out _) ||
+				!int.TryParse(txtPotenciaPA.Text, out _) ||
+				!int.TryParse(txtPrecoPA.Text, out _))
+			{
+				MessageBox.Show("Por favor, insira valores numéricos válidos.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			if (txtIDPA.Text != "" && VerificarId("tbl_automovel", "auto_id", Convert.ToInt32(txtIDPA.Text)))
 			{
 				con.Open();
 				cmd = new MySqlCommand { Connection = con };
@@ -876,14 +974,27 @@ namespace daniel_grazina_PAF
 		private void BtnAtualizarVendedorCliente_Click(object sender, EventArgs e)
 		{
 			Button clickedButton = sender as Button;
-			con.Open();
-			cmd = new MySqlCommand { Connection = con };
+			bool confirmacao;
+
 			//Verificação do botão clicado (botão do vendedor ou cliente)
 			switch (clickedButton.Name)
 			{
 				case "btnAtualizarVendedor":
-					if (txtIDPA.Text != "" && VerificarId("tbl_vendedor", Convert.ToInt32(txtIdVendedor.Text)))
+					confirmacao = MensagemConfirmação("Deseja atualizar vendedor?");
+					if (confirmacao == false)
+						return;
+
+					if (!int.TryParse(txtTlmVendedor.Text, out _) ||
+						(Int32)txtTlmVendedor.Text.Length > 9)
 					{
+						MessageBox.Show("Por favor, insira valores numéricos válidos.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return;
+					}
+
+					if (txtIDPA.Text != "" && VerificarId("tbl_vendedor", "vendedor_id", Convert.ToInt32(txtIdVendedor.Text)))
+					{
+						con.Open();
+						cmd = new MySqlCommand { Connection = con };
 						Image imagem = pbVendedorImagem.Image;
 						MemoryStream ms = new MemoryStream();
 						imagem.Save(ms, imagem.RawFormat);
@@ -908,9 +1019,21 @@ namespace daniel_grazina_PAF
                     break;
 
 				case "btnAtualizarCliente":
-                    if (txtIDPA.Text != "" && VerificarId("tbl_cliente", Convert.ToInt32(txtIdCliente.Text)))
+					confirmacao = MensagemConfirmação("Deseja atualizar cliente?");
+					if (confirmacao == false)
+						return;
+
+					if (!int.TryParse(txtTlmCliente.Text, out _) ||
+						(Int32)txtTlmCliente.Text.Length > 9)
+					{
+						MessageBox.Show("Por favor, insira valores numéricos válidos.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return;
+					}
+					if (txtIDPA.Text != "" && VerificarId("tbl_cliente", "cliente_id", Convert.ToInt32(txtIdCliente.Text)))
                     {
-						cmd.CommandText = "UPDATE tbl_cliente SET cliente_nome=@Nome, cliente_email=@Email, cliente_tlm=@Telemovel WHERE vendedor_id=@ID";
+						con.Open();
+						cmd = new MySqlCommand { Connection = con };
+						cmd.CommandText = "UPDATE tbl_cliente SET cliente_nome=@Nome, cliente_email=@Email, cliente_tlm=@Telemovel WHERE cliente_id=@ID";
 
 						cmd.Parameters.AddWithValue("@Nome", txtNomeCliente.Text);
 						cmd.Parameters.AddWithValue("@Email", txtEmailCliente.Text);
@@ -933,7 +1056,11 @@ namespace daniel_grazina_PAF
 		//Atualizar venda
 		private void BtnAtualizarVendas_Click(object sender, EventArgs e)
 		{
-            if (txtIDPA.Text != "" && VerificarId("tbl_vendas", Convert.ToInt32(txtIdVendas.Text)))
+			bool confirmacao = MensagemConfirmação("Deseja atualizar venda?");
+			if (confirmacao == false)
+				return;
+
+			if (txtIDPA.Text != "" && VerificarId("tbl_vendas", "venda_id", Convert.ToInt32(txtIdVendas.Text)))
             {
 				con.Open();
 				cmd = new MySqlCommand { Connection = con };
@@ -983,7 +1110,11 @@ namespace daniel_grazina_PAF
 		//Atualizar Utilizador
 		private void btnAtualizarUtilizador_Click(object sender, EventArgs e)
 		{
-            if (txtIDPA.Text != "" && VerificarId("tbl_utilizadores", Convert.ToInt32(txtIdGestao.Text)))
+			bool confirmacao = MensagemConfirmação("Deseja atualizar utilizador?");
+			if (confirmacao == false)
+				return;
+
+			if (txtIDPA.Text != "" && VerificarId("tbl_utilizadores", "lg_id", Convert.ToInt32(txtIdGestao.Text)))
             {
                 con.Open();
 				cmd = new MySqlCommand

@@ -45,3 +45,4 @@ C:\Users\danie\Source\Repos\DanielGrazina\PAF\daniel_grazina_PAF\daniel_grazina_
 C:\Users\danie\Source\Repos\DanielGrazina\PAF\daniel_grazina_PAF\daniel_grazina_PAF\obj\Debug\daniel_grazina_PAF.csproj.CopyComplete
 C:\Users\danie\Source\Repos\DanielGrazina\PAF\daniel_grazina_PAF\daniel_grazina_PAF\obj\Debug\daniel_grazina_PAF.exe
 C:\Users\danie\Source\Repos\DanielGrazina\PAF\daniel_grazina_PAF\daniel_grazina_PAF\obj\Debug\daniel_grazina_PAF.pdb
+C:\Users\danie\Source\Repos\DanielGrazina\PAF\daniel_grazina_PAF\daniel_grazina_PAF\bin\Debug\MySql.Data.dll
