@@ -62,61 +62,64 @@ namespace daniel_grazina_PAF
 		{
 			//Abrir ligação à base de dados
 			con.Open();
+            try
+            {
+				//Comando para verificar utilizador e password
+				cmd = new MySqlCommand
+				{
+					Connection = con,
+					CommandText = "select * from tbl_utilizadores where lg_nome = @user and lg_password= @pass"
+				};
+				cmd.Parameters.AddWithValue("@user", txtUser.Text);
+				cmd.Parameters.AddWithValue("@pass", txtPass.Text);
 
-			//Comando para verificar utilizador e password
-			cmd = new MySqlCommand
-			{
-				Connection = con,
-				CommandText = "select * from tbl_utilizadores where lg_nome = @user and lg_password= @pass"
-			};
-			cmd.Parameters.AddWithValue("@user", txtUser.Text);
-			cmd.Parameters.AddWithValue("@pass", txtPass.Text);
+				//Comando para guardar login ou tentativa de login na aplicação
+				cmd2 = new MySqlCommand();
+				cmd2.Connection = con;
+				cmd2.CommandText = $"Insert into tbl_logs_login (logs_nome, logs_password, logs_data) values (@user, @pass, @data)";
+				cmd2.Parameters.AddWithValue("@user", txtUser.Text);
+				cmd2.Parameters.AddWithValue("@pass", txtPass.Text);
+				cmd2.Parameters.AddWithValue("@data", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
-			//Comando para guardar login ou tentativa de login na aplicação
-			cmd2 = new MySqlCommand();
-			cmd2.Connection = con;
-			cmd2.CommandText = $"Insert into tbl_logs_login (logs_nome, logs_password, logs_data) values (@user, @pass, @data)";
-			cmd2.Parameters.AddWithValue("@user", txtUser.Text);
-			cmd2.Parameters.AddWithValue("@pass", txtPass.Text);
-			cmd2.Parameters.AddWithValue("@data", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+				//Executar comandos
+				cmd2.ExecuteNonQuery();
+				dr = cmd.ExecuteReader();
 
-			//Executar comandos
-			cmd2.ExecuteNonQuery();
-			dr = cmd.ExecuteReader();
-			
 
-			//Verificação do login
-			if (dr.Read())
-			{
-				//Caixa de mensagem para confirmação do login
-				MessageBox.Show($"Bem vindo {txtUser.Text}!", "AutoCAR v1.0", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				//Verificação do login
+				if (dr.Read())
+				{
+					//Caixa de mensagem para confirmação do login
+					MessageBox.Show($"Bem vindo {txtUser.Text}!", "AutoCAR v1.0", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-				//Esconder esta página
-				this.Hide();
+					//Esconder esta página
+					this.Hide();
 
-				//Abrir a proxima página e enviar o nome e o nivel (admin ou user) para a proxima página
-				Stand stand = new Stand(); 
-				stand.UserNome_gl = dr["lg_nome"].ToString();
-				stand.UserNivel_gl = dr["lg_nivel"].ToString();
-				stand.ShowDialog();
+					//Abrir a proxima página e enviar o nome e o nivel (admin ou user) para a proxima página
+					Stand stand = new Stand();
+					stand.UserNome_gl = dr["lg_nome"].ToString();
+					stand.UserNivel_gl = dr["lg_nivel"].ToString();
+					stand.ShowDialog();
 
-				//Fechar esta página
-				this.Close();
-			
+					//Fechar esta página
+					this.Close();
+
+				}
+				else
+				{
+					//Caixa de mensagem de erro no login
+					MessageBox.Show("User ou Pass não corretos!!!\nTente novamente.", "AutoCAR v1.0", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+					//Limpar caixas de texto e colocar cursor na caixa de texto do UserName
+					txtUser.Clear();
+					txtPass.Clear();
+					txtUser.Focus();
+				}
 			}
-			else
-			{
-				//Caixa de mensagem de erro no login
-				MessageBox.Show("User ou Pass não corretos!!!\nTente novamente.", "AutoCAR v1.0", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				
-				//Limpar caixas de texto e colocar cursor na caixa de texto do UserName
-				txtUser.Clear();
-				txtPass.Clear();
-				txtUser.Focus();
-			}
+			catch (Exception) {MessageBox.Show("Erro ao realizar login!!\nContacte o administrador!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
-			//Fechar ligação
-			con.Close();
+            //Fechar ligação
+            con.Close();
 		}
 
 
